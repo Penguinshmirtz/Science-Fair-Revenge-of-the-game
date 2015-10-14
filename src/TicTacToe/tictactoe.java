@@ -39,23 +39,24 @@ public class tictactoe {
 	
     public static int play(int[] p1, int[] p2) {
         // First we will figure out what moves each player makes
-        int move1 = p1[0];
-        int move2 = p2[move1];
-        int move3 = p1[1+move2];
-        int move4 = p2[3+move1*7+move3];
-        int move5 = p1[9+move2*6+move4];
-        int move6 = p2[24+move1*35+move3*5+move5];
-        int move7 = p1[57+move2*24+move4*4+move6]; // fix me by putting the right formula in the brackets
-        int move8 = p2[129+move1*105+move3*15+move5*3+move7]; // fix me by putting the right formula in the brackets
+    	int[] move = new int[8];
+        move[0] = p1[0];
+        move[1] = p2[move[0]];
+        move[2] = p1[1+move[1]];
+        move[3] = p2[3+move[0]*7+move[2]];
+        move[4] = p1[9+move[1]*6+move[3]];
+        move[5] = p2[24+move[0]*35+move[2]*5+move[4]];
+        move[6] = p1[57+move[1]*24+move[3]*4+move[5]]; // fix me by putting the right formula in the brackets
+        move[7] = p2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets
         int[][] board = new int[3][3]; // this defines a two dimensional array of 3 rows and three columns as the tic tac toe board
         // by default, java puts a zero for every position in the board.  We will use "1" to mean "X" on the board, and "2" to mean "O"
         
         // now that we know the sequence of actual moves, the game begins
         // first, fill the square as per the first move
-        if (move1 == 0) { // a zero on the first move means an x on the top right corner
+        if (move[0] == 0) { // a zero on the first move means an x on the top right corner
             board[0][0]=1;
         } else {
-            if (move1 == 1) { // a one on the first move means an x in the center square
+            if (move[0] == 1) { // a one on the first move means an x in the center square
                 board[1][1]=1;
             } else {
                 board[1][0]=1; // otherwise put an x on the middle row left square
@@ -64,7 +65,49 @@ public class tictactoe {
         // now for the second through ninth move, we can use a loop
         boolean done = false;
         int i = 1;
+        int winningPlayer = 0;
         while (!done) {
-                  
+        	board = placeChip(move[i],board,(i%2)+1);
+        	winningPlayer = checkWinner(board);
+        	i++;
         }
-    }}
+    }
+    
+    public static int[][] placeChip(int move, int [][] board, int player) {
+    	int countBlanks = 0;
+    	for (int i=0; i<=2; i++) {
+    		for (int j = 0; j<=2; j++) {
+    			if (board[i][j] == 0) {
+    				if (countBlanks == move) {
+    					board[i][j] = player;
+    					return board;
+    				}
+    				countBlanks++;
+    			}
+    		}
+    	}
+    	System.out.println("IT'S A TRAP:O");
+    	return board;
+    }
+    public static int checkWinner(int[][] board) {
+    	for (int i = 0; i<=2; i++) {
+    		if ((board[i][0]*board[i][1]*board[i][2]==1) // check to see if player 1 won on any of the 3 rows
+    				|| (board[0][1]*board[1][i]*board[2][i]==1)){ // check to if player 1 won on any of the 3 columns
+    			return 1;
+    		}
+    		if ((board[i][0]*board[i][1]*board[i][2]==8) // check to see if player 2 won on any of the 3 rows
+    				|| (board[0][i]*board[1][i]*board[2][i]==8)){ // check to see if player 2 won on any of the 3 columns
+    			return 2;
+    		}
+    	}
+    	if ((board[0][0]*board[1][1]*board[2][2]==1) // check to see if player 1 won on the main diagonal
+    			|| (board[0][2]*board[1][1]*board[2][0]==1) { // check to see if player 1 won on the reverse diagonal
+    		return 1;
+    	}
+    	if ((board[0][0]*board[1][1]*board[2][2]==8) // check to see if player 2 won on the main diagonal
+    			|| (board[0][2]*board[1][1]*board[2][0]==8) { // check to see if player 2 won on the reverse diagonal
+    		return 2;
+    	}
+    }
+}
+
