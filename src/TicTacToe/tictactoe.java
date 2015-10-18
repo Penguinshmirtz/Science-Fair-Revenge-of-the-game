@@ -34,12 +34,12 @@ public class tictactoe {
 		for (int i = 129; i<= 443; i++) {
 			p2Genes[i] = (int) (Math.random()*2);
 		}
-		System.out.println(play(p1Genes, p2Genes));
+		System.out.println("The winning player is "+play(p1Genes, p2Genes));
 	}
 	
     public static int play(int[] p1, int[] p2) {
         // First we will figure out what moves each player makes
-    	int[] move = new int[8];
+    	int[] move = new int[9];
         move[0] = p1[0];
         move[1] = p2[move[0]];
         move[2] = p1[1+move[1]];
@@ -47,7 +47,8 @@ public class tictactoe {
         move[4] = p1[9+move[1]*6+move[3]];
         move[5] = p2[24+move[0]*35+move[2]*5+move[4]];
         move[6] = p1[57+move[1]*24+move[3]*4+move[5]]; // fix me by putting the right formula in the brackets
-        move[7] = p2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets
+        move[7] = p2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets+
+        move[8] = 0;
         int[][] board = new int[3][3]; // this defines a two dimensional array of 3 rows and three columns as the tic tac toe board
         // by default, java puts a zero for every position in the board.  We will use "1" to mean "X" on the board, and "2" to mean "O"
         
@@ -69,8 +70,23 @@ public class tictactoe {
         while (!done) {
         	board = placeChip(move[i],board,(i%2)+1);
         	winningPlayer = checkWinner(board);
+        	done = (winningPlayer>0)||i==8;
         	i++;
         }
+        drawBoard(board);
+        return winningPlayer;
+    }
+    
+    public static void drawBoard (int[][] board) {
+    	for (int row = 0; row<=2; row++) {
+    		System.out.println();
+    		System.out.println("------");
+    		for (int col = 0; col<=2; col++) {
+    			if (board[row][col] == 0) System.out.print(" |");
+    			if (board[row][col] == 1) System.out.print("X|");
+    			if (board[row][col] == 2) System.out.print("O|");
+    		}
+    	}
     }
     
     public static int[][] placeChip(int move, int [][] board, int player) {
@@ -92,7 +108,7 @@ public class tictactoe {
     public static int checkWinner(int[][] board) {
     	for (int i = 0; i<=2; i++) {
     		if ((board[i][0]*board[i][1]*board[i][2]==1) // check to see if player 1 won on any of the 3 rows
-    				|| (board[0][1]*board[1][i]*board[2][i]==1)){ // check to if player 1 won on any of the 3 columns
+    				|| (board[0][i]*board[1][i]*board[2][i]==1)){ // check to if player 1 won on any of the 3 columns
     			return 1;
     		}
     		if ((board[i][0]*board[i][1]*board[i][2]==8) // check to see if player 2 won on any of the 3 rows
@@ -101,13 +117,14 @@ public class tictactoe {
     		}
     	}
     	if ((board[0][0]*board[1][1]*board[2][2]==1) // check to see if player 1 won on the main diagonal
-    			|| (board[0][2]*board[1][1]*board[2][0]==1) { // check to see if player 1 won on the reverse diagonal
+    			|| (board[0][2]*board[1][1]*board[2][0]==1)) { // check to see if player 1 won on the reverse diagonal
     		return 1;
     	}
     	if ((board[0][0]*board[1][1]*board[2][2]==8) // check to see if player 2 won on the main diagonal
-    			|| (board[0][2]*board[1][1]*board[2][0]==8) { // check to see if player 2 won on the reverse diagonal
+    			|| (board[0][2]*board[1][1]*board[2][0]==8)) { // check to see if player 2 won on the reverse diagonal
     		return 2;
     	}
+    	return 0;
     }
 }
 
