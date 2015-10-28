@@ -15,13 +15,15 @@ public class tic_Tac_Toe_With_Evolution {
 		while (!done){
 			winner = play(p1Genes,p2Genes);
 			if (winner == 0){
-				ties++; // implement the left side of the flowchart
+				ties++; // implement the right side of the flowchart
 			}
 			if (winner == 1){
-				// implement right side of the flowchart
+				// implement left side of the flowchart
+				p2Genes = mutatePlayerTwo(p2Genes); // player 2 needs to mutate 
 			}
 			if (winner == 2){
 				// implement middle of the flowchart
+				p1Genes = mutatePlayerOne(p1Genes); // player 1 needs to mutate
 			}
 			// more stuff here
 			iters++;
@@ -69,6 +71,45 @@ public class tic_Tac_Toe_With_Evolution {
 		return p2Genes;
 	}
 
+	
+	public static int[] mutatePlayerTwo(int[] genes) {
+		int mutantGeneLocation = 0;
+		int numberOfAlleles = 0;
+		for (int i=0; i<20; i++) { // in each iteration we will change 1 random gene
+			mutantGeneLocation = (int) Math.random()*444;
+			if (mutantGeneLocation < 3) {
+				numberOfAlleles = 8;
+			} else if (mutantGeneLocation < 24) {
+				numberOfAlleles = 6;
+			} else if (mutantGeneLocation < 129) {
+				numberOfAlleles = 4;
+			} else {
+				numberOfAlleles = 2;
+			}
+			genes[mutantGeneLocation] = (int) Math.random()*numberOfAlleles;
+		}
+		return genes;
+	}
+	
+	public static int[] mutatePlayerOne(int[] genes) {
+		int mutantGeneLocation = 0;
+		int numberOfAlleles = 0;
+		for (int i=0; i<10; i++) { // in each iteration we will change 1 random gene
+			mutantGeneLocation = (int) Math.random()*249;
+			if (mutantGeneLocation == 0) {
+				numberOfAlleles = 3;
+			} else if (mutantGeneLocation < 9) {
+				numberOfAlleles = 7;
+			} else if (mutantGeneLocation < 57) {
+				numberOfAlleles = 5;
+			} else {
+				numberOfAlleles = 3;
+			}
+			genes[mutantGeneLocation] = (int) Math.random()*numberOfAlleles;
+		}
+		return genes;
+	}
+	
 	public static int play(int[] p1, int[] p2) {
 		// First we will figure out what moves each player makes
 		int[] move = new int[9];
