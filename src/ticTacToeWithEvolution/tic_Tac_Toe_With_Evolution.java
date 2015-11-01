@@ -6,29 +6,87 @@ public class tic_Tac_Toe_With_Evolution {
 	public static void main(String[] args) {
 		int[] p1Genes = new int[249];
 		int[] p2Genes = new int[444];
+		int[][] mutant1Genes = new int [50][249];
+		int[][] mutant2Genes = new int [50][444];
+		int[] mutant1Scores = new int [50];
+		int[] mutant2Scores = new int [50];
 		p1Genes = randGenes1(); // randomly assign player 1's genes
 		p2Genes = randGenes2(); // randomly assign player 2's genes
 		boolean done = false;
 		int iters = 0;
 		int ties = 0;
 		int winner = 0;
+		int mutantWinner = 0;
+		int maxScore = 0;
+		int maxIndx = 0;
 		while (!done){
 			winner = play(p1Genes,p2Genes);
 			if (winner == 0){
 				ties++; // implement the right side of the flowchart
+				// create 50 mutants of player 1 and 2's genes
+				//run the "play" method" for every pair of p1's and p2's
+				//keep a counter for each mutant that counts how many wins, losses, and ties (+1 for win, 0 for tie, -1 for loss) they have
+				//pick the best mutant for player 1 and for player 2 (pick any one if there is a tie)
+				mutant1Genes[0] = p1Genes;
+				mutant2Genes[0] = p2Genes;
+				for (int i = 1; i < 50; i++){
+					mutant1Genes[i] = mutatePlayerOne(p1Genes);
+				}
+				for (int i = 1; i < 50; i++){
+					mutant2Genes[i] = mutatePlayerTwo(p2Genes);
+				}
+				for (int i = 0; i < 50; i++){
+					for (int j = 0; j < 50; j++){
+						mutantWinner = play(mutant1Genes[i], mutant2Genes[j]);
+						if (mutantWinner == 1) {
+							mutant1Scores[i]++;
+							mutant2Scores[j]--;
+						}
+						if (mutantWinner == 2) {
+							mutant1Scores[i]--;
+							mutant2Scores[j]++;
+						}
+					}
+				}
+				// pick the best mutant from among the player 1 mutants
+				maxScore = -999; // initiate the max score to something much smaller than the possible lowest score of -50				
+				for (int i = 0; i< 50; i++) {
+					if (maxScore < mutant1Scores[i]) {
+						maxScore = mutant1Scores[i];
+						maxIndx = i;
+					}
+				}
+				p1Genes = mutant1Genes[maxIndx];
+				maxScore = -999; // initiate the max score to something much smaller than the possible lowest score of -50				
+				for (int i = 0; i< 50; i++) {
+					if (maxScore < mutant2Scores[i]) {
+						maxScore = mutant2Scores[i];
+						maxIndx = i;
+					}
+				}
+				p2Genes = mutant2Genes[maxIndx];				
 			}
 			if (winner == 1){
 				// implement left side of the flowchart
-				p2Genes = mutatePlayerTwo(p2Genes); // player 2 needs to mutate 
+				p2Genes = mutatePlayerTwo(p2Genes); // player 2 needs to mutate
+				ties = 0;
 			}
 			if (winner == 2){
 				// implement middle of the flowchart
 				p1Genes = mutatePlayerOne(p1Genes); // player 1 needs to mutate
+				ties = 0;
 			}
 			// more stuff here
 			iters++;
-			done = ((iters>=2000)||(ties>=50));			
+			done = ((iters>=20000000)||(ties>=50));			
 		}
+		play(p1Genes,p2Genes);
+		System.out.println();
+		System.out.println("Ties = " + ties + "  iterations = " + iters);
+		System.out.println("Player 1 Genes");
+		System.out.println(p1Genes);
+		System.out.println("Player 2 Genes");
+		System.out.println(p2Genes);
 	}
 
 	public static int[] randGenes1() {
