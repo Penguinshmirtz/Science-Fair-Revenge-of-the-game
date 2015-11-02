@@ -3,13 +3,15 @@ package ticTacToeWithEvolution;
 public class tic_Tac_Toe_With_Evolution {
 
 
+	public static final int _numChildren = 500;
 	public static void main(String[] args) {
 		int[] p1Genes = new int[249];
 		int[] p2Genes = new int[444];
-		int[][] mutant1Genes = new int [50][249];
-		int[][] mutant2Genes = new int [50][444];
-		int[] mutant1Scores = new int [50];
-		int[] mutant2Scores = new int [50];
+		int[][] mutant1Genes = new int [_numChildren][249];
+		int[][] mutant2Genes = new int [_numChildren][444];
+		int[] mutant1Scores = new int [_numChildren];
+		int[] mutant2Scores = new int [_numChildren];
+		int[] zeros = new int[_numChildren];
 		p1Genes = randGenes1(); // randomly assign player 1's genes
 		p2Genes = randGenes2(); // randomly assign player 2's genes
 		boolean done = false;
@@ -20,8 +22,9 @@ public class tic_Tac_Toe_With_Evolution {
 		int maxScore = 0;
 		int maxIndx = 0;
 		while (!done){
-			winner = play(p1Genes,p2Genes);
-			if (winner == 0){
+			winner = play(p1Genes,p2Genes,iters%10==0);
+			if (iters%10==0) System.out.println("iters = " + iters);
+			if (true /*winner == 0*/){
 				ties++; // implement the right side of the flowchart
 				// create 50 mutants of player 1 and 2's genes
 				//run the "play" method" for every pair of p1's and p2's
@@ -29,15 +32,15 @@ public class tic_Tac_Toe_With_Evolution {
 				//pick the best mutant for player 1 and for player 2 (pick any one if there is a tie)
 				mutant1Genes[0] = p1Genes;
 				mutant2Genes[0] = p2Genes;
-				for (int i = 1; i < 50; i++){
+				for (int i = 1; i < _numChildren; i++){
 					mutant1Genes[i] = mutatePlayerOne(p1Genes);
 				}
-				for (int i = 1; i < 50; i++){
+				for (int i = 1; i < _numChildren; i++){
 					mutant2Genes[i] = mutatePlayerTwo(p2Genes);
 				}
-				for (int i = 0; i < 50; i++){
-					for (int j = 0; j < 50; j++){
-						mutantWinner = play(mutant1Genes[i], mutant2Genes[j]);
+				for (int i = 0; i < _numChildren; i++){
+					for (int j = 0; j < _numChildren; j++){
+						mutantWinner = play(mutant1Genes[i], mutant2Genes[j],false);
 						if (mutantWinner == 1) {
 							mutant1Scores[i]++;
 							mutant2Scores[j]--;
@@ -50,7 +53,7 @@ public class tic_Tac_Toe_With_Evolution {
 				}
 				// pick the best mutant from among the player 1 mutants
 				maxScore = -999; // initiate the max score to something much smaller than the possible lowest score of -50				
-				for (int i = 0; i< 50; i++) {
+				for (int i = 0; i< _numChildren; i++) {
 					if (maxScore < mutant1Scores[i]) {
 						maxScore = mutant1Scores[i];
 						maxIndx = i;
@@ -58,29 +61,31 @@ public class tic_Tac_Toe_With_Evolution {
 				}
 				p1Genes = mutant1Genes[maxIndx];
 				maxScore = -999; // initiate the max score to something much smaller than the possible lowest score of -50				
-				for (int i = 0; i< 50; i++) {
+				for (int i = 0; i< _numChildren; i++) {
 					if (maxScore < mutant2Scores[i]) {
 						maxScore = mutant2Scores[i];
 						maxIndx = i;
 					}
 				}
-				p2Genes = mutant2Genes[maxIndx];				
+				p2Genes = mutant2Genes[maxIndx];	
+				mutant1Scores=zeros;
+				mutant2Scores=zeros;				
 			}
-			if (winner == 1){
+			if (false /*winner == 1*/){
 				// implement left side of the flowchart
 				p2Genes = mutatePlayerTwo(p2Genes); // player 2 needs to mutate
 				ties = 0;
 			}
-			if (winner == 2){
+			if (false /*winner == 2*/){
 				// implement middle of the flowchart
 				p1Genes = mutatePlayerOne(p1Genes); // player 1 needs to mutate
 				ties = 0;
 			}
 			// more stuff here
 			iters++;
-			done = ((iters>=20000000)||(ties>=50));			
+			done = ((iters>=2000000)||(ties>=2000000));			
 		}
-		play(p1Genes,p2Genes);
+		play(p1Genes,p2Genes,true);
 		System.out.println();
 		System.out.println("Ties = " + ties + "  iterations = " + iters);
 		System.out.println("Player 1 Genes");
@@ -133,8 +138,9 @@ public class tic_Tac_Toe_With_Evolution {
 	public static int[] mutatePlayerTwo(int[] genes) {
 		int mutantGeneLocation = 0;
 		int numberOfAlleles = 0;
+		int SNP = 0;
 		for (int i=0; i<20; i++) { // in each iteration we will change 1 random gene
-			mutantGeneLocation = (int) Math.random()*444;
+			mutantGeneLocation = (int) (Math.random()*444);
 			if (mutantGeneLocation < 3) {
 				numberOfAlleles = 8;
 			} else if (mutantGeneLocation < 24) {
@@ -144,7 +150,9 @@ public class tic_Tac_Toe_With_Evolution {
 			} else {
 				numberOfAlleles = 2;
 			}
-			genes[mutantGeneLocation] = (int) Math.random()*numberOfAlleles;
+			SNP = (int) (Math.random()*numberOfAlleles);
+			genes[mutantGeneLocation] = SNP;
+			//System.out.println("SNP is " + SNP + "at location " + mutantGeneLocation);
 		}
 		return genes;
 	}
@@ -153,7 +161,7 @@ public class tic_Tac_Toe_With_Evolution {
 		int mutantGeneLocation = 0;
 		int numberOfAlleles = 0;
 		for (int i=0; i<10; i++) { // in each iteration we will change 1 random gene
-			mutantGeneLocation = (int) Math.random()*249;
+			mutantGeneLocation = (int) (Math.random()*249);
 			if (mutantGeneLocation == 0) {
 				numberOfAlleles = 3;
 			} else if (mutantGeneLocation < 9) {
@@ -163,12 +171,12 @@ public class tic_Tac_Toe_With_Evolution {
 			} else {
 				numberOfAlleles = 3;
 			}
-			genes[mutantGeneLocation] = (int) Math.random()*numberOfAlleles;
+			genes[mutantGeneLocation] = (int) (Math.random()*numberOfAlleles);
 		}
 		return genes;
 	}
 	
-	public static int play(int[] p1, int[] p2) {
+	public static int play(int[] p1, int[] p2, boolean printFlag) {
 		// First we will figure out what moves each player makes
 		int[] move = new int[9];
 		move[0] = p1[0];
@@ -204,7 +212,7 @@ public class tic_Tac_Toe_With_Evolution {
 			done = (winningPlayer>0)||i==8;
 			i++;
 		}
-		drawBoard(board);
+		if (printFlag) drawBoard(board);
 		return winningPlayer;
 	}
 
@@ -218,6 +226,7 @@ public class tic_Tac_Toe_With_Evolution {
 				if (board[row][col] == 2) System.out.print("O|");
 			}
 		}
+		System.out.println();
 	}
 
 	public static int[][] placeChip(int move, int [][] board, int player) {
