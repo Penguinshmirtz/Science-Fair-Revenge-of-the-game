@@ -24,7 +24,7 @@ public class tic_Tac_Toe_With_Evolution {
 		while (!done){
 			winner = play(p1Genes,p2Genes,iters%10==0);
 			if (iters%10==0) System.out.println("iters = " + iters);
-			if (true /*winner == 0*/){
+			if (winner == 0){
 				ties++; // implement the right side of the flowchart
 				// create 50 mutants of player 1 and 2's genes
 				//run the "play" method" for every pair of p1's and p2's
@@ -71,14 +71,14 @@ public class tic_Tac_Toe_With_Evolution {
 				mutant1Scores=zeros;
 				mutant2Scores=zeros;				
 			}
-			if (false /*winner == 1*/){
+			if (winner == 1){
 				// implement left side of the flowchart
-				p2Genes = mutatePlayerTwo(p2Genes); // player 2 needs to mutate
+				p2Genes = mutateActiveGenesP2(p1Genes,p2Genes); // player 2 needs to mutate
 				ties = 0;
 			}
-			if (false /*winner == 2*/){
+			if (winner == 2){
 				// implement middle of the flowchart
-				p1Genes = mutatePlayerOne(p1Genes); // player 1 needs to mutate
+				p1Genes = mutateActiveGenesP1(p1Genes,p2Genes); // player 1 needs to mutate
 				ties = 0;
 			}
 			// more stuff here
@@ -134,7 +134,7 @@ public class tic_Tac_Toe_With_Evolution {
 		return p2Genes;
 	}
 
-	
+
 	public static int[] mutatePlayerTwo(int[] genes) {
 		int mutantGeneLocation = 0;
 		int numberOfAlleles = 0;
@@ -156,7 +156,7 @@ public class tic_Tac_Toe_With_Evolution {
 		}
 		return genes;
 	}
-	
+
 	public static int[] mutatePlayerOne(int[] genes) {
 		int mutantGeneLocation = 0;
 		int numberOfAlleles = 0;
@@ -175,6 +175,68 @@ public class tic_Tac_Toe_With_Evolution {
 		}
 		return genes;
 	}
+	public static int[] mutateActiveGenesP1(int[] genes1, int[] genes2){
+		int mutantGeneLocation = 0;
+		int numberOfAlleles = 0;
+		int mutateMove = (int) (Math.random()*4);
+		int[] move = new int[9];
+		move[0] = genes1[0];
+		move[1] = genes2[move[0]];
+		move[2] = genes1[1+move[1]];
+		move[3] = genes2[3+move[0]*7+move[2]];
+		move[4] = genes1[9+move[1]*6+move[3]];
+		move[5] = genes2[24+move[0]*35+move[2]*5+move[4]];
+		move[6] = genes1[57+move[1]*24+move[3]*4+move[5]]; // fix me by putting the right formula in the brackets
+		move[7] = genes2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets+
+		move[8] = 0;
+		if (mutateMove == 0) {
+			mutantGeneLocation = 0;
+			numberOfAlleles = 3;
+		} else if (mutateMove == 1) {
+			mutantGeneLocation = 1+move[1];
+			numberOfAlleles = 7;
+		} else if (mutateMove == 2) {
+			mutantGeneLocation = 9+move[1]*6+move[3];
+			numberOfAlleles = 5;
+		} else {
+			mutantGeneLocation = 57+move[1]*24+move[3]*4+move[5];
+			numberOfAlleles = 3;
+		}
+		genes1[mutantGeneLocation] = (int) (Math.random()*numberOfAlleles);
+		return genes1;
+	}
+	
+	public static int[] mutateActiveGenesP2(int[] genes1, int[] genes2){
+		int mutantGeneLocation = 0;
+		int numberOfAlleles = 0;
+		int mutateMove = (int) (Math.random()*4);
+		int[] move = new int[9];
+		move[0] = genes1[0];
+		move[1] = genes2[move[0]];
+		move[2] = genes1[1+move[1]];
+		move[3] = genes2[3+move[0]*7+move[2]];
+		move[4] = genes1[9+move[1]*6+move[3]];
+		move[5] = genes2[24+move[0]*35+move[2]*5+move[4]];
+		move[6] = genes1[57+move[1]*24+move[3]*4+move[5]]; // fix me by putting the right formula in the brackets
+		move[7] = genes2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets+
+		move[8] = 0;
+		if (mutateMove == 0) {
+			mutantGeneLocation = move[0];
+			numberOfAlleles = 8;
+		} else if (mutateMove == 1) {
+			mutantGeneLocation = 3+move[0]*7+move[2];
+			numberOfAlleles = 6;
+		} else if (mutateMove == 2) {
+			mutantGeneLocation = 24+move[0]*35+move[2]*5+move[4];
+			numberOfAlleles = 4;
+		} else {
+			mutantGeneLocation = 129+move[0]*105+move[2]*15+move[4]*3+move[6];
+			numberOfAlleles = 2;
+		}
+		genes2[mutantGeneLocation] = (int) (Math.random()*numberOfAlleles);
+		return genes2;
+	}
+	
 	
 	public static int play(int[] p1, int[] p2, boolean printFlag) {
 		// First we will figure out what moves each player makes
