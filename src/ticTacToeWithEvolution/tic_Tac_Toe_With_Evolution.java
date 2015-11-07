@@ -3,7 +3,7 @@ package ticTacToeWithEvolution;
 public class tic_Tac_Toe_With_Evolution {
 
 
-	public static final int _numChildren = 500;
+	public static final int _numChildren = 20;
 	public static void main(String[] args) {
 		int[] p1Genes = new int[249];
 		int[] p2Genes = new int[444];
@@ -22,9 +22,10 @@ public class tic_Tac_Toe_With_Evolution {
 		int maxScore = 0;
 		int maxIndx = 0;
 		while (!done){
-			winner = play(p1Genes,p2Genes,iters%10==0);
-			if (iters%10==0) System.out.println("iters = " + iters);
+			if (true/*iters%10==0*/) System.out.println("iters = " + iters);
+			winner = play(p1Genes,p2Genes,true /*iters%10==0*/);
 			if (winner == 0){
+				System.out.println(">> iters " + iters + " is a draw");
 				ties++; // implement the right side of the flowchart
 				// create 50 mutants of player 1 and 2's genes
 				//run the "play" method" for every pair of p1's and p2's
@@ -33,10 +34,10 @@ public class tic_Tac_Toe_With_Evolution {
 				mutant1Genes[0] = p1Genes;
 				mutant2Genes[0] = p2Genes;
 				for (int i = 1; i < _numChildren; i++){
-					mutant1Genes[i] = mutatePlayerOne(p1Genes);
+					mutant1Genes[i] = mutateActiveGenesP1(p1Genes, p2Genes);
 				}
 				for (int i = 1; i < _numChildren; i++){
-					mutant2Genes[i] = mutatePlayerTwo(p2Genes);
+					mutant2Genes[i] = mutateActiveGenesP2(p1Genes, p2Genes);
 				}
 				for (int i = 0; i < _numChildren; i++){
 					for (int j = 0; j < _numChildren; j++){
@@ -73,17 +74,19 @@ public class tic_Tac_Toe_With_Evolution {
 			}
 			if (winner == 1){
 				// implement left side of the flowchart
+				System.out.println(">> iters " + iters + " player 1 won");
 				p2Genes = mutateActiveGenesP2(p1Genes,p2Genes); // player 2 needs to mutate
 				ties = 0;
 			}
 			if (winner == 2){
 				// implement middle of the flowchart
+				System.out.println(">> iters " + iters +" player 2 won");
 				p1Genes = mutateActiveGenesP1(p1Genes,p2Genes); // player 1 needs to mutate
 				ties = 0;
 			}
 			// more stuff here
 			iters++;
-			done = ((iters>=2000000)||(ties>=2000000));			
+			done = ((iters>=100000)||(ties>=10));			
 		}
 		play(p1Genes,p2Genes,true);
 		System.out.println();
@@ -202,7 +205,11 @@ public class tic_Tac_Toe_With_Evolution {
 			mutantGeneLocation = 57+move[1]*24+move[3]*4+move[5];
 			numberOfAlleles = 3;
 		}
-		genes1[mutantGeneLocation] = (int) (Math.random()*numberOfAlleles);
+		int newGene = (int) (Math.random()*numberOfAlleles);
+		while (genes1[mutantGeneLocation] == newGene){
+			newGene = (int) (Math.random()*numberOfAlleles);
+		}
+		genes1[mutantGeneLocation] = newGene;
 		return genes1;
 	}
 	
@@ -233,7 +240,11 @@ public class tic_Tac_Toe_With_Evolution {
 			mutantGeneLocation = 129+move[0]*105+move[2]*15+move[4]*3+move[6];
 			numberOfAlleles = 2;
 		}
-		genes2[mutantGeneLocation] = (int) (Math.random()*numberOfAlleles);
+		int newGene = (int) (Math.random()*numberOfAlleles);
+		while (genes2[mutantGeneLocation] == newGene){
+			newGene = (int) (Math.random()*numberOfAlleles);
+		}
+		genes2[mutantGeneLocation] = newGene;
 		return genes2;
 	}
 	
@@ -250,6 +261,7 @@ public class tic_Tac_Toe_With_Evolution {
 		move[6] = p1[57+move[1]*24+move[3]*4+move[5]]; // fix me by putting the right formula in the brackets
 		move[7] = p2[129+move[0]*105+move[2]*15+move[4]*3+move[6]]; // fix me by putting the right formula in the brackets+
 		move[8] = 0;
+		for (int i=0; i<9;i++) System.out.println("move # " + i + " is " + move[i]);
 		int[][] board = new int[3][3]; // this defines a two dimensional array of 3 rows and three columns as the tic tac toe board
 		// by default, java puts a zero for every position in the board.  We will use "1" to mean "X" on the board, and "2" to mean "O"
 
