@@ -3,13 +3,22 @@ package battleShip;
 public class PlayBattleShip {
 	public static void main(){
 		//The main method will play a random game of Battleship, and determine the winner of the game
+		int winner = 0;
 		int[][]shipBoardP1 = new int[10][10];
 		int[][]shipBoardP2 = new int[10][10];
-		int[][]fireBoardP1 = new int[10][10];
+		int[][]fireBoardP1 = new int[10][10];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
 		int[][]fireBoardP2 = new int[10][10];
 		shipBoardP1=placeShips();
 		shipBoardP2=placeShips();
-
+		while (winner == 0){
+			winner = fire(fireBoardP1, shipBoardP2);
+			if(winner == 0){
+				break;
+			}
+			winner = fire(fireBoardP2, shipBoardP1);
+			if (winner ==1) winner = 2;
+		}
+		System.out.println("Player" + winner + "has won!");
 	}
 
 	/*
@@ -67,5 +76,38 @@ public class PlayBattleShip {
 		}
 		return shipBoard;
 	}
-
+	public static int fire(int[][] fireBoard, int[][] shipBoard){
+		int randomX = (int) (Math.random() * 10);
+		int randomY = (int) (Math.random() * 10);
+		int shipsSunk = 0;
+		while(fireBoard[randomX][randomY] != 0){
+			randomX = (int) (Math.random() * 10);
+			randomY = (int) (Math.random() * 10);
+		}
+		if(shipBoard[randomX][randomY] != 0){
+			shipBoard[randomX][randomY] = 0;
+			fireBoard[randomX][randomY] = 2;
+		}
+		else{
+			fireBoard[randomX][randomY] = 1;
+		}
+		for(int i = 2; i < 7; i++){
+			int shipsLeft = 0;
+			for(int x = 0; x < 10; x++){
+				for(int y = 0; y < 10; y++){
+					if(shipBoard[x][y] == i){
+						shipsLeft++;
+					}
+				}
+			}
+			if(shipsLeft == 0){
+				System.out.println("You sunk the " + i + " ship");
+				shipsSunk++;
+			}
+		}
+		if(shipsSunk == 5){
+			return 1;
+		}
+		return 0;
+	}
 }
