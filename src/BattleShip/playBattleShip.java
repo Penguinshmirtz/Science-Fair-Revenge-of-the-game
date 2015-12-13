@@ -1,18 +1,18 @@
-package battleShip;
+package BattleShip;
 
-public class PlayBattleShip {
-	public static void main(){
+public class playBattleShip {
+	public static void main(String[] args){
 		//The main method will play a random game of Battleship, and determine the winner of the game
 		int winner = 0;
-		int[][]shipBoardP1 = new int[10][10];
-		int[][]shipBoardP2 = new int[10][10];
-		int[][]fireBoardP1 = new int[10][10];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
-		int[][]fireBoardP2 = new int[10][10];
+		int[][]shipBoardP1 = new int[20][20];
+		int[][]shipBoardP2 = new int[20][20];
+		int[][]fireBoardP1 = new int[20][20];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
+		int[][]fireBoardP2 = new int[20][20];
 		shipBoardP1=placeShips();
 		shipBoardP2=placeShips();
 		while (winner == 0){
 			winner = fire(fireBoardP1, shipBoardP2);
-			if(winner == 0){
+			if(winner == 1){
 				break;
 			}
 			winner = fire(fireBoardP2, shipBoardP1);
@@ -59,7 +59,7 @@ public class PlayBattleShip {
 				}
 			}
 			if (orientation == 1) { // place the ship from row, column to row, column - shiplength + 1
-				for(int j = randomColumn; j > randomColumn - shipLength; j--){
+				for(int j = randomColumn; j < randomColumn + shipLength - 1; j++){
 					shipBoard[randomRow][j] = shipType;
 				}
 			}
@@ -69,7 +69,7 @@ public class PlayBattleShip {
 				}
 			}
 			if (orientation == 3) { // place the ship from row, colum to row, column + shiplength -1
-				for(int j = randomColumn; j < randomColumn + shipLength; j++){
+				for(int j = randomColumn; j > randomColumn - shipLength + 1 ; j--){
 					shipBoard[randomRow][j] = shipType;
 				}
 			}
