@@ -4,33 +4,56 @@ public class playBattleShip {
 	public static void main(String[] args){
 		//The main method will play a random game of Battleship, and determine the winner of the game
 		int winner = 0;
-		int[][]shipBoardP1 = new int[20][20];//this keeps track of where all of P1's ships are
-		int[][]shipBoardP2 = new int[20][20];
-		int[][]fireBoardP1 = new int[20][20];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
-		int[][]fireBoardP2 = new int[20][20];
+		int[][]shipBoardP1 = new int[10][10];//this keeps track of where all of P1's ships are
+		int[][]shipBoardP2 = new int[10][10];
+		int[][]fireBoardP1 = new int[10][10];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
+		int[][]fireBoardP2 = new int[10][10];
 		boolean[]sunkShipsP1 = new boolean [5];//this array keeps track of the sunken ship types for P1
 		boolean[]sunkShipsP2 = new boolean [5];
 		for (int i = 0; i<5; i++){
 			sunkShipsP1[i] = false;
 			sunkShipsP2[i] = false;
 		}
-		shipBoardP1=placeShips();
-		shipBoardP2=placeShips();
+		shipBoardP1=placeShips(1);
+		shipBoardP2=placeShips(2);
+		// Neil, please draw four large squares lined up as per the design
+		SimpleGraphics.addText(70, 20, "PLAYER 1 FIRE BOARD");
+		SimpleGraphics.addText(350, 20, "PLAYER 2 FIRE BOARD");
+		SimpleGraphics.addText(70, 300, "PLAYER 1 SHIP BOARD");
+		SimpleGraphics.addText(350, 300, "PLAYER 2 SHIP BOARD");
+		SimpleGraphics.drawRectangle( 20, 30, 250, 250);
+		SimpleGraphics.drawRectangle(20, 310, 250, 250);
+		SimpleGraphics.drawRectangle(290, 310, 250, 250);
+		SimpleGraphics.drawRectangle(290, 30, 250, 250);
 		while (winner == 0){
-			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2);
+			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1);
 			if(winner == 1){
 				break;
 			}
-			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1);
+			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2);
 			if (winner ==1) winner = 2;
 		}
 		System.out.println("Player " + winner + " has won!");
+		System.out.println("Here is the Player 1 FireBoard");
+		for (int i = 0;i<10;i++) {
+			for (int j = 0; j<10; j++) {
+				System.out.print(fireBoardP1[i][j]);
+			}
+			System.out.println();
+		}
+		System.out.println("Here is the Player 2 FireBoard");
+		for (int i = 0;i<10;i++) {
+			for (int j = 0; j<10; j++) {
+				System.out.print(fireBoardP2[i][j]);
+			}
+			System.out.println();
+		}
 	}
 
 	/*
 	 * placeShips places ships in a random place and orientation on the board
 	 */
-	public static int[][] placeShips(){
+	public static int[][] placeShips(int player){
 		int[][]shipBoard = new int[10][10];
 		int orientation = 0;
 		int shipLength = 0;
@@ -59,30 +82,40 @@ public class playBattleShip {
 				}
 				
 			}
+			System.out.println("Ship Type is : " + shipType);
+			System.out.println("Ship Length is : " + shipLength);
+			System.out.println("Ship Orientation is : " + orientation);
+			System.out.println("Ship Row is : " + randomRow);
+			System.out.println("Ship Column is : " + randomColumn);
 			if (orientation == 0) { // place the ship from row, colum to row - shiplentgh + 1, column
 				for(int j = randomRow; j > randomRow - shipLength; j--){
 					shipBoard[j][randomColumn] = shipType;
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
 			if (orientation == 1) { // place the ship from row, column to row, column - shiplength + 1
-				for(int j = randomColumn; j < randomColumn + shipLength - 1; j++){
+				for(int j = randomColumn; j < randomColumn + shipLength; j++){
 					shipBoard[randomRow][j] = shipType;
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
 			if (orientation == 2) { // place the ship from row, column to row + shiplength -1, column 
 				for(int j = randomRow; j < randomRow + shipLength; j++){
 					shipBoard[j][randomColumn] = shipType;
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
 			if (orientation == 3) { // place the ship from row, colum to row, column + shiplength -1
-				for(int j = randomColumn; j > randomColumn - shipLength + 1 ; j--){
+				for(int j = randomColumn; j > randomColumn - shipLength ; j--){
 					shipBoard[randomRow][j] = shipType;
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
+			printShipBoards(shipBoard);
 		}
 		return shipBoard;
 	}
-	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips){
+	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips, int player){
 		int randomX = (int) (Math.random() * 10);
 		int randomY = (int) (Math.random() * 10);
 		int shipsSunk = 0;
@@ -93,9 +126,11 @@ public class playBattleShip {
 		if(shipBoard[randomX][randomY] != 0){
 			shipBoard[randomX][randomY] = 0;
 			fireBoard[randomX][randomY] = 2;
+			SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomX*25), 33 + randomY*25, 5, "red");
 		}
 		else{
 			fireBoard[randomX][randomY] = 1;
+			SimpleGraphics.fillCircle(22 + (player -1)*270 + randomX*25, 33 + randomY*25, 5, "white");
 		}
 		for(int i = 2; i < 7; i++){
 			int shipsLeft = 0;
@@ -119,4 +154,14 @@ public class playBattleShip {
 		}
 		return 0;
 	}
+	public static void printShipBoards(int[][] SB) {
+		System.out.println("Here is the ShipBoard");
+		for (int i = 0;i<10;i++) {
+			for (int j = 0; j<10; j++) {
+				System.out.print(SB[i][j]);
+			}
+			System.out.println();
+		}
+	}
+	
 }
