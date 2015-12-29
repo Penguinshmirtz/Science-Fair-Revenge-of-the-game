@@ -4,21 +4,27 @@ public class playBattleShip {
 	public static void main(String[] args){
 		//The main method will play a random game of Battleship, and determine the winner of the game
 		int winner = 0;
-		int[][]shipBoardP1 = new int[20][20];
+		int[][]shipBoardP1 = new int[20][20];//this keeps track of where all of P1's ships are
 		int[][]shipBoardP2 = new int[20][20];
 		int[][]fireBoardP1 = new int[20][20];// 0 = not fired at, 1 = fired but missed, 2 == fired and hit
 		int[][]fireBoardP2 = new int[20][20];
+		boolean[]sunkShipsP1 = new boolean [5];//this array keeps track of the sunken ship types for P1
+		boolean[]sunkShipsP2 = new boolean [5];
+		for (int i = 0; i<5; i++){
+			sunkShipsP1[i] = false;
+			sunkShipsP2[i] = false;
+		}
 		shipBoardP1=placeShips();
 		shipBoardP2=placeShips();
 		while (winner == 0){
-			winner = fire(fireBoardP1, shipBoardP2);
+			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2);
 			if(winner == 1){
 				break;
 			}
-			winner = fire(fireBoardP2, shipBoardP1);
+			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1);
 			if (winner ==1) winner = 2;
 		}
-		System.out.println("Player" + winner + "has won!");
+		System.out.println("Player " + winner + " has won!");
 	}
 
 	/*
@@ -76,7 +82,7 @@ public class playBattleShip {
 		}
 		return shipBoard;
 	}
-	public static int fire(int[][] fireBoard, int[][] shipBoard){
+	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips){
 		int randomX = (int) (Math.random() * 10);
 		int randomY = (int) (Math.random() * 10);
 		int shipsSunk = 0;
@@ -101,8 +107,11 @@ public class playBattleShip {
 				}
 			}
 			if(shipsLeft == 0){
-				System.out.println("You sunk the " + i + " ship");
 				shipsSunk++;
+				if(!sunkShips[i-2]){
+					System.out.println("You sunk the " + i + " ship");
+					sunkShips[i-2] = true;
+				}
 			}
 		}
 		if(shipsSunk == 5){
