@@ -87,6 +87,8 @@ public class playBattleShip {
 			System.out.println("Ship Orientation is : " + orientation);
 			System.out.println("Ship Row is : " + randomRow);
 			System.out.println("Ship Column is : " + randomColumn);
+
+
 			if (orientation == 0) { // place the ship from row, colum to row - shiplentgh + 1, column
 				for(int j = randomRow; j > randomRow - shipLength; j--){
 					shipBoard[j][randomColumn] = shipType;
@@ -96,7 +98,7 @@ public class playBattleShip {
 			if (orientation == 1) { // place the ship from row, column to row, column - shiplength + 1
 				for(int j = randomColumn; j < randomColumn + shipLength; j++){
 					shipBoard[randomRow][j] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + randomRow*25, 5, "grey");
 				}
 			}
 			if (orientation == 2) { // place the ship from row, column to row + shiplength -1, column 
@@ -108,10 +110,10 @@ public class playBattleShip {
 			if (orientation == 3) { // place the ship from row, colum to row, column + shiplength -1
 				for(int j = randomColumn; j > randomColumn - shipLength ; j--){
 					shipBoard[randomRow][j] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomColumn*25), 313 + j*25, 5, "grey");
+					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + randomRow*25, 5, "grey");
 				}
+				printShipBoards(shipBoard);
 			}
-			printShipBoards(shipBoard);
 		}
 		return shipBoard;
 	}
@@ -126,12 +128,13 @@ public class playBattleShip {
 		if(shipBoard[randomX][randomY] != 0){
 			shipBoard[randomX][randomY] = 0;
 			fireBoard[randomX][randomY] = 2;
-			SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomX*25), 33 + randomY*25, 5, "red");
+			SimpleGraphics.fillCircle((22 + (player - 1)*270 + randomY*25), 33 + randomX*25, 5, "red");
 		}
 		else{
 			fireBoard[randomX][randomY] = 1;
-			SimpleGraphics.fillCircle(22 + (player -1)*270 + randomX*25, 33 + randomY*25, 5, "white");
+			SimpleGraphics.fillCircle(22 + (player -1)*270 + randomY*25, 33 + randomX*25, 5, "black");
 		}
+		sleep(70);
 		for(int i = 2; i < 7; i++){
 			int shipsLeft = 0;
 			for(int x = 0; x < 10; x++){
@@ -154,14 +157,18 @@ public class playBattleShip {
 		}
 		return 0;
 	}
-	public static void printShipBoards(int[][] SB) {
-		System.out.println("Here is the ShipBoard");
+	public static void printShipBoards(int[][]SB1) {
+		System.out.println("Here is t 1 ShipBoard");
 		for (int i = 0;i<10;i++) {
 			for (int j = 0; j<10; j++) {
-				System.out.print(SB[i][j]);
+				System.out.println(SB1[i][j]);
 			}
 			System.out.println();
 		}
 	}
-	
+	public static void sleep(int time){
+		try{
+			Thread.sleep(time);
+		} catch (Exception e) {}
+	}
 }
