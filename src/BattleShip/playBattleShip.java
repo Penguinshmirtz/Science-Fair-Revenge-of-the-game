@@ -39,7 +39,7 @@ public class playBattleShip {
 			if (winner ==1) winner = 2;
 		}
 		System.out.println("Player " + winner + " has won!");
-		System.out.println("Here is the Player 1 FireBoard");
+		/*System.out.println("Here is the Player 1 FireBoard");
 		for (int i = 0;i<10;i++) {
 			for (int j = 0; j<10; j++) {
 				System.out.print(fireBoardP1[i][j]);
@@ -52,7 +52,7 @@ public class playBattleShip {
 				System.out.print(fireBoardP2[i][j]);
 			}
 			System.out.println();
-		}
+		}*/
 	}
 
 	/**
@@ -83,12 +83,11 @@ public class playBattleShip {
 				shipRow = matrixReturned[1];
 				shipColumn = matrixReturned[2];
 			} while (isShipThere(orientation, shipRow, shipColumn, shipLength, shipBoard)) ;
-			System.out.println("Ship Type is : " + shipType);
-			System.out.println("Ship Length is : " + shipLength);
-			System.out.println("Ship Orientation is : " + orientation);
-			System.out.println("Ship Row is : " + shipRow);
-			System.out.println("Ship Column is : " + shipColumn);
-
+//			System.out.println("Ship Type is : " + shipType);
+//			System.out.println("Ship Length is : " + shipLength);
+//			System.out.println("Ship Orientation is : " + orientation);
+//			System.out.println("Ship Row is : " + shipRow);
+//			System.out.println("Ship Column is : " + shipColumn);
 
 			if (orientation == 0) { // place the ship from row, column to row - ship length + 1, column
 				for(int j = shipRow; j > shipRow - shipLength; j--){
@@ -113,7 +112,7 @@ public class playBattleShip {
 					shipBoard[shipRow][j] = shipType;
 					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + shipRow*25, 5, "grey");
 				}
-				printShipBoards(shipBoard);
+				//printShipBoards(shipBoard);
 			}
 		}
 		return shipBoard;
@@ -163,6 +162,7 @@ public class playBattleShip {
 				shipsSunk++;
 				if(!sunkShips[i-2]){
 					System.out.println("You sunk the " + shipNames[i-2]);
+					sleep(2000);
 					sunkShips[i-2] = true;
 				}
 			}
@@ -180,7 +180,7 @@ public class playBattleShip {
 		System.out.println("Here is t 1 ShipBoard");
 		for (int i = 0;i<10;i++) {
 			for (int j = 0; j<10; j++) {
-				System.out.println(SB[i][j]);
+				System.out.print(SB[i][j]);
 			}
 			System.out.println();
 		}
