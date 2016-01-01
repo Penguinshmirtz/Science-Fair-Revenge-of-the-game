@@ -18,32 +18,71 @@ public class playBattleShip {
 		int[] stateVar2 = {0, 0, 0}; // this array keeps track of the hunt target model for player 2
 		Stack<Integer> targetStackP1 = new Stack<Integer>();
 		Stack<Integer> targetStackP2 = new Stack<Integer>();
+		int numP1Wins = 0;
+		int numP2Wins = 0;
+
+		for (int k = 0; k < 100000; k ++){
+
+		// reset the sunkShips to all be not sunk
 		for (int i = 0; i<5; i++){
 			sunkShipsP1[i] = false;
 			sunkShipsP2[i] = false;
+		}
+		// reset the fireBoard and shipBoards to all be empy
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				shipBoardP1[i][j] = 0;
+				shipBoardP2[i][j] = 0;
+				fireBoardP1[i][j] = 0;
+				fireBoardP2[i][j] = 0;
+			}
+		}
+		// reset the winner to 0 (no winner)
+		winner = 0;
+		// reset the stateVar
+		stateVar1[0] = 0;
+		stateVar1[1] = 0;
+		stateVar1[2] = 0;
+		stateVar2[0] = 0;
+		stateVar2[1] = 0;
+		stateVar2[2] = 0;
+		// empty both player's targeting stacks
+		while(!targetStackP1.isEmpty()){
+			targetStackP1.pop();
+		}
+		while(!targetStackP2.isEmpty()){
+			targetStackP2.pop();
 		}
 
 		//Now we place the ships on the ship board
 		shipBoardP1=placeShips(1);
 		shipBoardP2=placeShips(2);
-		// Neil, please draw four large squares lined up as per the design
-		SimpleGraphics.addText(70, 20, "PLAYER 1 FIRE BOARD");
-		SimpleGraphics.addText(350, 20, "PLAYER 2 FIRE BOARD");
-		SimpleGraphics.addText(70, 300, "PLAYER 1 SHIP BOARD");
-		SimpleGraphics.addText(350, 300, "PLAYER 2 SHIP BOARD");
-		SimpleGraphics.drawRectangle( 20, 30, 250, 250);
-		SimpleGraphics.drawRectangle(20, 310, 250, 250);
-		SimpleGraphics.drawRectangle(290, 310, 250, 250);
-		SimpleGraphics.drawRectangle(290, 30, 250, 250);
+//				SimpleGraphics.addText(70, 20, "PLAYER 1 FIRE BOARD");
+//				SimpleGraphics.addText(350, 20, "PLAYER 2 FIRE BOARD");
+//				SimpleGraphics.addText(70, 300, "PLAYER 1 SHIP BOARD");
+//				SimpleGraphics.addText(350, 300, "PLAYER 2 SHIP BOARD");
+//				SimpleGraphics.drawRectangle( 20, 30, 250, 250);
+//				SimpleGraphics.drawRectangle(20, 310, 250, 250);
+//				SimpleGraphics.drawRectangle(290, 310, 250, 250);
+//				SimpleGraphics.drawRectangle(290, 30, 250, 250);
 		while (winner == 0){
+//			System.out.println("it is now P1 turn");
 			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1, stateVar1, targetStackP1);
 			if(winner == 1){
+				numP1Wins++;
 				break;
 			}
+//			System.out.println("it is now P2 turn");
 			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2, stateVar2, targetStackP2);
-			if (winner ==1) winner = 2;
+			if (winner ==1) {
+				numP2Wins++;
+			}
 		}
-		System.out.println("Player " + winner + " has won!");
+		//		System.out.println("Player " + winner + " has won!");
+		System.out.println("Player 1 has " + numP1Wins + " wins, and Player 2 has" + numP2Wins + " wins");
+		sleep(100);
+
+		}
 		/*System.out.println("Here is the Player 1 FireBoard");
 		for (int i = 0;i<10;i++) {
 			for (int j = 0; j<10; j++) {
@@ -97,25 +136,25 @@ public class playBattleShip {
 			if (orientation == 0) { // place the ship from row, column to row - ship length + 1, column
 				for(int j = shipRow; j > shipRow - shipLength; j--){
 					shipBoard[j][shipColumn] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipColumn*25), 313 + j*25, 5, "grey");
+//					SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
 			if (orientation == 1) { // place the ship from row, column to row, column - ship length
 				for(int j = shipColumn; j < shipColumn + shipLength; j++){
 					shipBoard[shipRow][j] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + shipRow*25, 5, "grey");
+//					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + shipRow*25, 5, "grey");
 				}
 			}
 			if (orientation == 2) { // place the ship from row, column to row + ship length -1, column 
 				for(int j = shipRow; j < shipRow + shipLength; j++){
 					shipBoard[j][shipColumn] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipColumn*25), 313 + j*25, 5, "grey");
+//					SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipColumn*25), 313 + j*25, 5, "grey");
 				}
 			}
 			if (orientation == 3) { // place the ship from row, column to row, column + ship length
 				for(int j = shipColumn; j > shipColumn - shipLength ; j--){
 					shipBoard[shipRow][j] = shipType;
-					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + shipRow*25, 5, "grey");
+//					SimpleGraphics.fillCircle((22 + (player - 1)*270 + j*25), 313 + shipRow*25, 5, "grey");
 				}
 				//printShipBoards(shipBoard);
 			}
@@ -142,7 +181,7 @@ public class playBattleShip {
 		do {
 			do {
 				if (player == 1){coordinates = lazyHuntTargetParityCoordinates(fireBoard, stateVar, targetStack);}
-				else{coordinates = randomCoordinates();}
+				else{coordinates = huntTargetParityCoordinates(fireBoard, stateVar, targetStack);}
 				shipX = coordinates[0];
 				shipY = coordinates[1];
 			} while ((shipX<0)||(shipY<0)||(shipX>9)||(shipY>9)); // This condition ensures that the final targeting coordinates are on the board
@@ -165,13 +204,13 @@ public class playBattleShip {
 			// push coordinate of the west square
 			targetStack.push(shipY);
 			targetStack.push(shipX-1);
-			SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipY*25), 33 + shipX*25, 5, "red");
+//			SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipY*25), 33 + shipX*25, 5, "red");
 		}
 		else{
 			fireBoard[shipX][shipY] = 1;
-			SimpleGraphics.fillCircle(22 + (player -1)*270 + shipY*25, 33 + shipX*25, 5, "black");
+//			SimpleGraphics.fillCircle(22 + (player -1)*270 + shipY*25, 33 + shipX*25, 5, "black");
 		}
-		sleep(70);
+		//sleep(70);
 		for(int i = 2; i < 7; i++){
 			int shipsLeft = 0;
 			for(int x = 0; x < 10; x++){
@@ -184,11 +223,13 @@ public class playBattleShip {
 			if(shipsLeft == 0){
 				shipsSunk++;
 				if(!sunkShips[i-2]){
-					System.out.println("You sunk the " + shipNames[i-2]);
-					sleep(1000);
+					//System.out.println("You sunk the " + shipNames[i-2]);
+					//sleep(1000);
 					sunkShips[i-2] = true;
-					while(!targetStack.isEmpty()){
-						targetStack.pop();
+					if(player == 1){
+						while(!targetStack.isEmpty()){
+							targetStack.pop();
+						}
 					}
 				}
 			}
@@ -351,7 +392,7 @@ public class playBattleShip {
 		for(int i = 0; i < 10; i++){
 			for(int j = 0; j < 10; j++){
 				if((i+j)%2 == 0){
-					if(fireboard[i][j] != 0){
+					if(fireboard[j][i] == 0){
 						remainder = 0;
 					}
 				}
@@ -360,7 +401,7 @@ public class playBattleShip {
 		do{	
 			coordinates[0] = (int) (Math.random() * 10);//select a random Y from 0-10
 			coordinates[1] = (int) (Math.random() * 10);//select a random X from 0 to 10
-		}while((coordinates[0]+coordinates[1])%2!= remainder);
+		}while((coordinates[0]+coordinates[1])%2 != remainder);
 		return coordinates;
 	}
 	public static int[] huntTargetParityCoordinates(int[][] fireboard, int[] stateVar, Stack<Integer> targetStack){
@@ -372,7 +413,7 @@ public class playBattleShip {
 		targetCoordinates[0] = targetStack.pop();
 		targetCoordinates[1] = targetStack.pop();
 		return targetCoordinates;
-		
+
 	}
 	public static int[] lazyHuntTargetParityCoordinates(int[][] fireboard, int[] stateVar, Stack<Integer> targetStack){
 		if(targetStack.isEmpty()){
@@ -383,6 +424,6 @@ public class playBattleShip {
 		targetCoordinates[0] = targetStack.pop();
 		targetCoordinates[1] = targetStack.pop();
 		return targetCoordinates;
-		
+
 	}
 }
