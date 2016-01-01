@@ -1,4 +1,5 @@
 package BattleShip;
+import java.util.*;
 
 public class playBattleShip {
 	public static void main(String[] args){
@@ -15,6 +16,8 @@ public class playBattleShip {
 		boolean[]sunkShipsP2 = new boolean [5];
 		int[] stateVar1 = {0, 0, 0}; // this array keeps track of the hunt target mode for player 1
 		int[] stateVar2 = {0, 0, 0}; // this array keeps track of the hunt target model for player 2
+		Stack<Integer> targetStackP1 = new Stack<Integer>();
+		Stack<Integer> targetStackP2 = new Stack<Integer>();
 		for (int i = 0; i<5; i++){
 			sunkShipsP1[i] = false;
 			sunkShipsP2[i] = false;
@@ -33,11 +36,11 @@ public class playBattleShip {
 		SimpleGraphics.drawRectangle(290, 310, 250, 250);
 		SimpleGraphics.drawRectangle(290, 30, 250, 250);
 		while (winner == 0){
-			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1, stateVar1);
+			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1, stateVar1, targetStackP1);
 			if(winner == 1){
 				break;
 			}
-			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2, stateVar2);
+			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2, stateVar2, targetStackP2);
 			if (winner ==1) winner = 2;
 		}
 		System.out.println("Player " + winner + " has won!");
@@ -130,31 +133,45 @@ public class playBattleShip {
 	 * 		0 = the firing player has not won
 	 * 		1 = the firing player has won
 	 */
-	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips, int player, int[] stateVar){
+	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips, int player, int[] stateVar, Stack<Integer> targetStack){
 		int shipX = 0;
 		int shipY = 0;
 		int[] coordinates;
 		int shipsSunk = 0;
 		String[] shipNames = new String[] {"speedboat","submarine","battleship","aircraft carrier","destroyer"};
 		do {
-			if (player == 1){coordinates = huntTargetCoordinates(fireBoard, stateVar);}
-			else{coordinates = randomCoordinates();}
-			shipX = coordinates[0];
-			shipY = coordinates[1];
-		} while (fireBoard[shipX][shipY] != 0);
+			do {
+				if (player == 1){coordinates = lazyHuntTargetParityCoordinates(fireBoard, stateVar, targetStack);}
+				else{coordinates = randomCoordinates();}
+				shipX = coordinates[0];
+				shipY = coordinates[1];
+			} while ((shipX<0)||(shipY<0)||(shipX>9)||(shipY>9)); // This condition ensures that the final targeting coordinates are on the board
+		} while (fireBoard[shipX][shipY] != 0); // This condition ensures that the final targeting coordinates have not been fired on before
 		if(shipBoard[shipX][shipY] != 0){
 			shipBoard[shipX][shipY] = 0;
 			fireBoard[shipX][shipY] = 2;
 			stateVar[0] = 1;
 			stateVar[1] = shipX;
 			stateVar[2] = shipY;
+			// push coordinates of north square
+			targetStack.push(shipY-1);
+			targetStack.push(shipX);
+			// push coordinate of the south square
+			targetStack.push(shipY+1);
+			targetStack.push(shipX);
+			// push coordinate of the east square
+			targetStack.push(shipY);
+			targetStack.push(shipX+1);
+			// push coordinate of the west square
+			targetStack.push(shipY);
+			targetStack.push(shipX-1);
 			SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipY*25), 33 + shipX*25, 5, "red");
 		}
 		else{
 			fireBoard[shipX][shipY] = 1;
 			SimpleGraphics.fillCircle(22 + (player -1)*270 + shipY*25, 33 + shipX*25, 5, "black");
 		}
-		//sleep(70);
+		sleep(70);
 		for(int i = 2; i < 7; i++){
 			int shipsLeft = 0;
 			for(int x = 0; x < 10; x++){
@@ -168,8 +185,11 @@ public class playBattleShip {
 				shipsSunk++;
 				if(!sunkShips[i-2]){
 					System.out.println("You sunk the " + shipNames[i-2]);
-					//sleep(2000);
+					sleep(1000);
 					sunkShips[i-2] = true;
+					while(!targetStack.isEmpty()){
+						targetStack.pop();
+					}
 				}
 			}
 		}
@@ -324,5 +344,45 @@ public class playBattleShip {
 		// We only get here if we are surrounded by squares that cannot be fired on, something went wrong
 		stateVar[0] = 0; // go back to hunt mode
 		return randomCoordinates();
+	}
+	public static int[] randomParity(int[][]fireboard){
+		int []coordinates = new int[2];
+		int remainder = 1;
+		for(int i = 0; i < 10; i++){
+			for(int j = 0; j < 10; j++){
+				if((i+j)%2 == 0){
+					if(fireboard[i][j] != 0){
+						remainder = 0;
+					}
+				}
+			}
+		}
+		do{	
+			coordinates[0] = (int) (Math.random() * 10);//select a random Y from 0-10
+			coordinates[1] = (int) (Math.random() * 10);//select a random X from 0 to 10
+		}while((coordinates[0]+coordinates[1])%2!= remainder);
+		return coordinates;
+	}
+	public static int[] huntTargetParityCoordinates(int[][] fireboard, int[] stateVar, Stack<Integer> targetStack){
+		if(targetStack.isEmpty()){
+			return randomParity(fireboard);
+		}
+		int targetCoordinates[] = new int [2];
+		// We're going to pop the next coordinates from the stack and return them
+		targetCoordinates[0] = targetStack.pop();
+		targetCoordinates[1] = targetStack.pop();
+		return targetCoordinates;
+		
+	}
+	public static int[] lazyHuntTargetParityCoordinates(int[][] fireboard, int[] stateVar, Stack<Integer> targetStack){
+		if(targetStack.isEmpty()){
+			return randomParity(fireboard);
+		}
+		int targetCoordinates[] = new int [2];
+		// We're going to pop the next coordinates from the stack and return them
+		targetCoordinates[0] = targetStack.pop();
+		targetCoordinates[1] = targetStack.pop();
+		return targetCoordinates;
+		
 	}
 }
