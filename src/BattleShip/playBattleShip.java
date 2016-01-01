@@ -4,7 +4,7 @@ public class playBattleShip {
 	public static void main(String[] args){
 		//The main method will play a game of Battleship, and determine the winner of the game
 		//The strategies called by the main method can vary and include random
-		
+
 		//First we initialize all the variables used by the program
 		int winner = 0;
 		int[][]shipBoardP1 = new int[10][10];//this keeps track of where all of P1's ships are
@@ -13,11 +13,13 @@ public class playBattleShip {
 		int[][]fireBoardP2 = new int[10][10];
 		boolean[]sunkShipsP1 = new boolean [5];//this array keeps track of the sunken ship types for P1
 		boolean[]sunkShipsP2 = new boolean [5];
+		int[] stateVar1 = {0, 0, 0}; // this array keeps track of the hunt target mode for player 1
+		int[] stateVar2 = {0, 0, 0}; // this array keeps track of the hunt target model for player 2
 		for (int i = 0; i<5; i++){
 			sunkShipsP1[i] = false;
 			sunkShipsP2[i] = false;
 		}
-		
+
 		//Now we place the ships on the ship board
 		shipBoardP1=placeShips(1);
 		shipBoardP2=placeShips(2);
@@ -31,11 +33,11 @@ public class playBattleShip {
 		SimpleGraphics.drawRectangle(290, 310, 250, 250);
 		SimpleGraphics.drawRectangle(290, 30, 250, 250);
 		while (winner == 0){
-			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1);
+			winner = fire(fireBoardP1, shipBoardP2, sunkShipsP2, 1, stateVar1);
 			if(winner == 1){
 				break;
 			}
-			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2);
+			winner = fire(fireBoardP2, shipBoardP1, sunkShipsP1, 2, stateVar2);
 			if (winner ==1) winner = 2;
 		}
 		System.out.println("Player " + winner + " has won!");
@@ -83,11 +85,11 @@ public class playBattleShip {
 				shipRow = matrixReturned[1];
 				shipColumn = matrixReturned[2];
 			} while (isShipThere(orientation, shipRow, shipColumn, shipLength, shipBoard)) ;
-//			System.out.println("Ship Type is : " + shipType);
-//			System.out.println("Ship Length is : " + shipLength);
-//			System.out.println("Ship Orientation is : " + orientation);
-//			System.out.println("Ship Row is : " + shipRow);
-//			System.out.println("Ship Column is : " + shipColumn);
+			//			System.out.println("Ship Type is : " + shipType);
+			//			System.out.println("Ship Length is : " + shipLength);
+			//			System.out.println("Ship Orientation is : " + orientation);
+			//			System.out.println("Ship Row is : " + shipRow);
+			//			System.out.println("Ship Column is : " + shipColumn);
 
 			if (orientation == 0) { // place the ship from row, column to row - ship length + 1, column
 				for(int j = shipRow; j > shipRow - shipLength; j--){
@@ -128,27 +130,31 @@ public class playBattleShip {
 	 * 		0 = the firing player has not won
 	 * 		1 = the firing player has won
 	 */
-	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips, int player){
+	public static int fire(int[][] fireBoard, int[][] shipBoard, boolean[]sunkShips, int player, int[] stateVar){
 		int shipX = 0;
 		int shipY = 0;
 		int[] coordinates;
 		int shipsSunk = 0;
 		String[] shipNames = new String[] {"speedboat","submarine","battleship","aircraft carrier","destroyer"};
 		do {
-			coordinates = randomCoordinates();
+			if (player == 1){coordinates = huntTargetCoordinates(fireBoard, stateVar);}
+			else{coordinates = randomCoordinates();}
 			shipX = coordinates[0];
 			shipY = coordinates[1];
 		} while (fireBoard[shipX][shipY] != 0);
 		if(shipBoard[shipX][shipY] != 0){
 			shipBoard[shipX][shipY] = 0;
 			fireBoard[shipX][shipY] = 2;
+			stateVar[0] = 1;
+			stateVar[1] = shipX;
+			stateVar[2] = shipY;
 			SimpleGraphics.fillCircle((22 + (player - 1)*270 + shipY*25), 33 + shipX*25, 5, "red");
 		}
 		else{
 			fireBoard[shipX][shipY] = 1;
 			SimpleGraphics.fillCircle(22 + (player -1)*270 + shipY*25, 33 + shipX*25, 5, "black");
 		}
-		sleep(70);
+		//sleep(70);
 		for(int i = 2; i < 7; i++){
 			int shipsLeft = 0;
 			for(int x = 0; x < 10; x++){
@@ -162,7 +168,7 @@ public class playBattleShip {
 				shipsSunk++;
 				if(!sunkShips[i-2]){
 					System.out.println("You sunk the " + shipNames[i-2]);
-					sleep(2000);
+					//sleep(2000);
 					sunkShips[i-2] = true;
 				}
 			}
@@ -224,7 +230,7 @@ public class playBattleShip {
 			if (orientation == 3){
 				randomColumn = randomColumn + shipLength - 1;
 			}
-			
+
 		}
 		int[] matrixReturned = new int [] {orientation, randomRow, randomColumn};
 		return matrixReturned;
@@ -272,8 +278,51 @@ public class playBattleShip {
 	 */
 	public static int[] randomCoordinates(){
 		int []coordinates = new int[2];
-		coordinates[0] = (int) (Math.random() * 10);//select a random X from 0-10
-		coordinates[1] = (int) (Math.random() * 10);//select a random Y from 0 to 10
+		coordinates[0] = (int) (Math.random() * 10);//select a random Y from 0-10
+		coordinates[1] = (int) (Math.random() * 10);//select a random X from 0 to 10
 		return coordinates;
+	}
+	public static int[] huntTargetCoordinates(int[][] fireboard, int[] stateVar){
+		if(stateVar[0] == 0){
+			return randomCoordinates();
+		}
+		int lastHitX = stateVar[1];
+		int lastHitY = stateVar[2];
+		int targetCoordinates[] = new int [2];
+		// We're going to try north if we're still on board and it hasn't been fired on
+		if ((lastHitY-1>=0)) { /*Are we still on the board?*/
+			if (fireboard[lastHitX][lastHitY-1]==0) { /*Was this not fired at before?*/
+				targetCoordinates[0] = lastHitX;
+				targetCoordinates[1] = lastHitY-1;
+				return targetCoordinates;
+			}
+		}
+		// We're going to try east if we're still on board and it hasn't been fired on
+		if ((lastHitX+1<10)) { /*Are we still on the board?*/
+			if (fireboard[lastHitX+1][lastHitY]==0) { /*Was this not fired at before?*/
+				targetCoordinates[0] = lastHitX+1;
+				targetCoordinates[1] = lastHitY;
+				return targetCoordinates;
+			}
+		}
+		// We're going to try west if we're still on board and it hasn't been fired on
+		if ((lastHitX-1>=0)) { /*Are we still on the board?*/
+			if (fireboard[lastHitX-1][lastHitY]==0) { /*Was this not fired at before?*/
+				targetCoordinates[0] = lastHitX-1;
+				targetCoordinates[1] = lastHitY;
+				return targetCoordinates;
+			}
+		}
+		// We're going to try south if we're still on board and it hasn't been fired on
+		if ((lastHitY+1<10)) { /*Are we still on the board?*/
+			if (fireboard[lastHitX][lastHitY+1]==0) { /*Was this not fired at before?*/
+				targetCoordinates[0] = lastHitX;
+				targetCoordinates[1] = lastHitY+1;
+				return targetCoordinates;
+			}
+		}
+		// We only get here if we are surrounded by squares that cannot be fired on, something went wrong
+		stateVar[0] = 0; // go back to hunt mode
+		return randomCoordinates();
 	}
 }
