@@ -45,9 +45,9 @@ public class Player {
 		int[]playerGenes = new int[geneNumber];
 		for(int i = 0; i < geneNumber; i++){
 			if (i == 1){
-				genes[i] = (int) (Math.random()*3);
+				playerGenes[i] = (int) (Math.random()*3);
 			} else {
-				genes[i] = (int) (Math.random()*2);
+				playerGenes[i] = (int) (Math.random()*2);
 			}
 		}
 		genes = playerGenes;
@@ -136,6 +136,10 @@ public class Player {
 		int winner = 0;
 		this.shipBoard = battleShipWithEvolution.placeShips();
 		other.shipBoard = battleShipWithEvolution.placeShips();
+		this.clearFireBoard();
+		this.emptyTargetStack();
+		other.clearFireBoard();
+		other.emptyTargetStack();
 		while (winner == 0){
 			winner = this.fire(other);
 			if(winner == 1){
@@ -228,5 +232,17 @@ public class Player {
 			return 1;
 		}
 		return 0;
+	}
+	public void clearFireBoard() {
+		for( int i = 0; i < 10; i++){
+			for( int j = 0; j < 10;j++){
+				fireBoard[i][j] = 0;
+			}
+		}
+	}
+	public void emptyTargetStack() {
+		while(!this.targetStack.isEmpty()){
+			this.targetStack.pop();
+		}
 	}
 }

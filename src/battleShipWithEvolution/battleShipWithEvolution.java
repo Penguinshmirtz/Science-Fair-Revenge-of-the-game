@@ -3,7 +3,7 @@ package battleShipWithEvolution;
 import java.util.Stack;
 
 public class battleShipWithEvolution {
-	public static void main(){
+	public static void main(String[] args){
 		//First we initialize all the constants
 		final int playerNumber = 6;
 		final int gameNumber = 10000;
