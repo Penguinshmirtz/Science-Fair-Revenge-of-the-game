@@ -10,8 +10,10 @@ public class battleShipWithEvolution {
 		final int winNeeded = 50;
 		boolean goFirst;
 		int winner;
+		int z = 0;
 		//Then we will define all variables
 		Player[] players = new Player[playerNumber];
+		Player tempPlayer = new Player();
 		for(int i = 0; i < playerNumber; i++){
 			players[i] = new Player();
 		}
@@ -22,6 +24,7 @@ public class battleShipWithEvolution {
 			}
 			for(int i = 0; i < playerNumber - 1; i++){
 				for(int j = i + 1; j < playerNumber; j++){
+					System.out.println("Starting tournament between" + i + " and " + j);
 					for(int k = 0; k < gameNumber; k++){
 						goFirst = Math.random()>= 0.5;
 						if (goFirst) {
@@ -39,14 +42,34 @@ public class battleShipWithEvolution {
 								players[i].incScore();
 							}
 						}
-						System.out.println("Game " + k + " between " + i + " and " + j + " just ended.");
+						//System.out.println("Game " + k + " between " + i + " and " + j + " just ended.");
+					}
+				}
+			}
+					
+			//We will order the players from best score to worst score
+			for(int l = 0; l < playerNumber - 1; l++){
+				for (int k = l+1; k< playerNumber; k++) {
+					if(players[l].getScore() < players[k].getScore()){
+						tempPlayer = players[l];
+						players[l] = players[k];
+						players[k] = tempPlayer;
 					}
 				}
 			}
 			for (int i = 0; i< playerNumber; i++){
+				players[i].printGenes(i);
 				System.out.println("Player " + i + " score was: " + players[i].getScore());
 			}
-		} while (/*winsInRow < winNeeded*/ false);
+			System.out.println("The best player was player 0 with a score of " + players[0].getScore());
+			System.out.println("The second best player was player 1 with a score of " + players[1].getScore());
+			System.out.println("The worst player was player "+ (playerNumber - 1) +" with a score of" + players[playerNumber-1].getScore());
+			// now we have evaluated how each player is doing...
+			// here we will replace the lowest rated player with a new mutant that combines the top two scorers
+			players[playerNumber - 1] = players[0].combine(players[1]);
+			players[playerNumber - 1].mutate();
+			z++;
+		} while (/*winsInRow < winNeeded*/ z < 10);
 	}
 	public static int[] randomCoordinates(){
 		int []coordinates = new int[2];

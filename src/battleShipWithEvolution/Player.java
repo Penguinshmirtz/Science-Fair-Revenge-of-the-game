@@ -174,16 +174,20 @@ public class Player {
 					if (this.genes[1]== 0) {
 						// here we need to be targeting randomly
 						coordinates = battleShipWithEvolution.randomCoordinates();
-					} else {
+					} else if(this.genes[1] == 1){
 						// here we need to be targeting in thorough mode
 						coordinates = battleShipWithEvolution.huntTargetParityCoordinates(this.fireBoard, this.targetStack);
-					} 
+					} else {
+						// here we need to be targeting with parity
+						coordinates = battleShipWithEvolution.randomParity(this.fireBoard);
+					}
 				}
 				shipX = coordinates[0];
 				shipY = coordinates[1];
 			} while ((shipX<0)||(shipY<0)||(shipX>9)||(shipY>9)); // This condition ensures that the final targeting coordinates are on the board
 		} while (fireBoard[shipX][shipY] != 0); // This condition ensures that the final targeting coordinates have not been fired on before
 		if(other.shipBoard[shipX][shipY] != 0){
+			this.mode = 1;
 			other.shipBoard[shipX][shipY] = 0;
 			this.fireBoard[shipX][shipY] = 2;
 			// push coordinates of north square
@@ -220,7 +224,8 @@ public class Player {
 					//System.out.println("You sunk the " + shipNames[i-2]);
 					//sleep(1000);
 					other.sunkShips[i-2] = true;
-					if(this.genes[2] == 2){
+					this.mode = 0;
+					if(this.genes[2] == 1){
 						while(!this.targetStack.isEmpty()){
 							this.targetStack.pop();
 						}
@@ -244,5 +249,12 @@ public class Player {
 		while(!this.targetStack.isEmpty()){
 			this.targetStack.pop();
 		}
+	}
+	public void printGenes(int playerNumber){
+		System.out.println("Here are the genes for player " + playerNumber);
+		for(int i = 0; i < geneNumber; i++){
+			System.out.print(genes[i] + " ");
+		}
+		System.out.println();
 	}
 }
