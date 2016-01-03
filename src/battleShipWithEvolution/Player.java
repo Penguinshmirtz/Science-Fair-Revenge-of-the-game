@@ -157,7 +157,7 @@ public class Player {
 		int shipY = 0;
 		int[] coordinates = {0, 0};
 		int shipsSunk = 0;
-		String[] shipNames = new String[] {"speedboat","submarine","battleship","aircraft carrier","destroyer"};
+//		String[] shipNames = new String[] {"speedboat","submarine","battleship","aircraft carrier","destroyer"};
 		do {
 			do {
 				if(this.mode == 0){
@@ -250,11 +250,11 @@ public class Player {
 			this.targetStack.pop();
 		}
 	}
-	public void printGenes(int playerNumber){
-		System.out.println("Here are the genes for player " + playerNumber);
+	public String printGenes(int playerNumber){
+		String returnString = "" + playerNumber;
 		for(int i = 0; i < geneNumber; i++){
-			System.out.print(genes[i] + " ");
+			returnString = returnString + (", " + genes[i]);
 		}
-		System.out.println();
+		return returnString;
 	}
 }
