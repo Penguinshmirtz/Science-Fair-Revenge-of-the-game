@@ -51,7 +51,7 @@ public class battleShipWithEvolution {
 			}
 					
 			//We will order the players from best score to worst score
-			System.out.println("Generation " + z + " has finished.  Players have been sorted from highest to lowest score:");
+//			System.out.println("Generation " + z + " has finished.  Players have been sorted from highest to lowest score:");
 			for(int l = 0; l < playerNumber - 1; l++){
 				for (int k = l+1; k< playerNumber; k++) {
 					if(players[l].getScore() < players[k].getScore()){
@@ -62,7 +62,7 @@ public class battleShipWithEvolution {
 				}
 			}
 			for (int i = 0; i< playerNumber; i++){
-				printString = z + ", " + i + ", "+ players[i].printGenes(i) + ", " + players[i].getScore();
+				printString = z + ", " + i + ", "+ players[i].printGenes() + ", " + players[i].getScore();
 				System.out.println(printString);
 			}
 //			System.out.println("The best player was player 0 with a score of " + players[0].getScore());

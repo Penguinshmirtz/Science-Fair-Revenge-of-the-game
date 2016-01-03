@@ -250,11 +250,12 @@ public class Player {
 			this.targetStack.pop();
 		}
 	}
-	public String printGenes(int playerNumber){
-		String returnString = "" + playerNumber;
+	public String printGenes(){
+		String returnString = "";
 		for(int i = 0; i < geneNumber; i++){
 			returnString = returnString + (", " + genes[i]);
 		}
 		return returnString;
 	}
+	
 }
