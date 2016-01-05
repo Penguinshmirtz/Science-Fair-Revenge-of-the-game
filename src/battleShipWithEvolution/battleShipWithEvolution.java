@@ -11,14 +11,30 @@ public class battleShipWithEvolution {
 		final int winNeeded = 50;
 		boolean goFirst;
 		int winner;
-		int z = 0;
+		int z = 130;
 		//Then we will define all variables
 		Player[] players = new Player[playerNumber];
 		Player tempPlayer = new Player();
 		String printString = "";
-		for(int i = 0; i < playerNumber; i++){
-			players[i] = new Player();
-		}
+		//for(int i = 0; i < playerNumber; i++){
+			//players[i] = new Player();
+		//}
+		int[] player0Genes = new int[] {1, 1, 1, 1, 1};
+		int[] player1Genes = new int[] {1, 1, 1, 1, 1};
+		int[] player2Genes = new int[] {0, 1, 1, 1, 1,};
+		int[] player3Genes = new int[] {0, 1, 1, 1, 1};
+		int[] player4Genes = new int[] {0, 1, 1, 1, 1};
+		int[] player5Genes = new int[] {1, 1, 1, 0, 1};
+		int[] player6Genes = new int[] {0, 1, 1, 1, 1};
+		int[] player7Genes = new int[] {0, 1, 1, 1, 1};
+		players[0]=new Player(player0Genes);
+		players[1]=new Player(player1Genes);
+		players[2]=new Player(player2Genes);
+		players[3]=new Player(player3Genes);
+		players[4]=new Player(player4Genes);
+		players[5]=new Player(player5Genes);
+		players[6]=new Player(player6Genes);
+		players[7]=new Player(player7Genes);
 		int winsInRow = 0;
 		System.out.println("Generation, rank, gene_0, gene_1, gene_2, gene_3, gene_4, score");
 		do {
