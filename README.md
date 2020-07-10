@@ -1,2 +1,2 @@
 # Science-Fair-Revenge-of-the-game
-The fork is strong with this one. This is a science fair project to try and solve a popular game (to be decided)
+Science Fair project to use Evolutionary Game Theory Techniques to find best strategies for Battleship
